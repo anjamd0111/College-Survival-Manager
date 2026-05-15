@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Survival Manager</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">Survival<em>OS</em></span>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">☰</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-section="dashboard">
+      <span class="nav-icon">⬡</span><span class="nav-label">Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-section="assignments">
+      <span class="nav-icon">✦</span><span class="nav-label">Assignments</span>
+    </a>
+    <a href="#" class="nav-item" data-section="attendance">
+      <span class="nav-icon">◎</span><span class="nav-label">Attendance</span>
+    </a>
+    <a href="#" class="nav-item" data-section="notes">
+      <span class="nav-icon">❋</span><span class="nav-label">Notes</span>
+    </a>
+    <a href="#" class="nav-item" data-section="exams">
+      <span class="nav-icon">◷</span><span class="nav-label">Exam Countdown</span>
+    </a>
+    <a href="#" class="nav-item" data-section="schedule">
+      <span class="nav-icon">▦</span><span class="nav-label">Schedule</span>
+    </a>
+    <a href="#" class="nav-item" data-section="productivity">
+      <span class="nav-icon">▲</span><span class="nav-label">Productivity</span>
+    </a>
+    <a href="#" class="nav-item" data-section="settings">
+      <span class="nav-icon">⚙</span><span class="nav-label">Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">AJ</div>
+      <div class="user-info">
+        <span class="user-name">Student</span>
+        <span class="user-college" id="collegeNameDisplay">College</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content" id="mainContent">
+
+  <!-- ── DASHBOARD ── -->
+  <section class="section active" id="section-dashboard">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Dashboard</h1>
+        <p class="section-subtitle" id="currentDateTime">Loading...</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card glass" id="stat-assignments">
+        <div class="stat-icon">✦</div>
+        <div class="stat-info">
+          <span class="stat-value" id="statTotalAssignments">0</span>
+          <span class="stat-label">Total Assignments</span>
+        </div>
+        <div class="stat-sub" id="statCompletedAssignments">0 completed</div>
+      </div>
+      <div class="stat-card glass" id="stat-exams">
+        <div class="stat-icon">◷</div>
+        <div class="stat-info">
+          <span class="stat-value" id="statUpcomingExams">0</span>
+          <span class="stat-label">Upcoming Exams</span>
+        </div>
+        <div class="stat-sub">scheduled</div>
+      </div>
+      <div class="stat-card glass" id="stat-attendance">
+        <div class="stat-icon">◎</div>
+        <div class="stat-info">
+          <span class="stat-value" id="statAttendance">0%</span>
+          <span class="stat-label">Avg Attendance</span>
+        </div>
+        <div class="stat-sub" id="statAttendanceStatus">No subjects</div>
+      </div>
+      <div class="stat-card glass" id="stat-productivity">
+        <div class="stat-icon">▲</div>
+        <div class="stat-info">
+          <span class="stat-value" id="statProductivity">0</span>
+          <span class="stat-label">Productivity Score</span>
+        </div>
+        <div class="stat-sub" id="statStreak">0 day streak 🔥</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Assignment Progress</h3>
+        <div class="progress-wrap">
+          <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="dashAssignmentBar" style="width:0%"></div>
+          </div>
+          <span id="dashAssignmentPct">0%</span>
+        </div>
+        <div class="mini-list" id="dashPendingList">
+          <p class="empty-hint">No pending assignments</p>
+        </div>
+      </div>
+
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Upcoming Exams</h3>
+        <div class="mini-list" id="dashExamList">
+          <p class="empty-hint">No exams scheduled</p>
+        </div>
+      </div>
+
+      <div class="dash-card glass quote-card">
+        <h3 class="dash-card-title">Daily Motivation</h3>
+        <blockquote class="quote-text" id="dailyQuote">Loading...</blockquote>
+        <span class="quote-author" id="quoteAuthor">—</span>
+        <button class="btn btn-sm btn-ghost" onclick="loadQuote()">New Quote ↻</button>
+      </div>
+
+      <div class="dash-card glass pomodoro-card">
+        <h3 class="dash-card-title">Pomodoro Timer</h3>
+        <div class="pomodoro-display">
+          <span id="pomodoroTime">25:00</span>
+        </div>
+        <div class="pomodoro-label" id="pomodoroLabel">Focus Session</div>
+        <div class="pomodoro-controls">
+          <button class="btn btn-sm btn-accent" onclick="pomodoroStart()">▶ Start</button>
+          <button class="btn btn-sm btn-ghost" onclick="pomodoroPause()">⏸ Pause</button>
+          <button class="btn btn-sm btn-ghost" onclick="pomodoroReset()">↺ Reset</button>
+        </div>
+        <div class="pomodoro-sessions">Sessions today: <strong id="pomodoroSessions">0</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ASSIGNMENTS ── -->
+  <section class="section" id="section-assignments">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Assignments</h1>
+        <p class="section-subtitle">Track your academic tasks</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('assignmentModal')">+ New Assignment</button>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" class="search-input" placeholder="Search assignments…" oninput="filterAssignments()" id="assignmentSearch" />
+      <select class="filter-select" onchange="filterAssignments()" id="assignmentFilter">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+      </select>
+      <select class="filter-select" onchange="filterAssignments()" id="assignmentPriorityFilter">
+        <option value="all">All Priorities</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+    </div>
+
+    <div class="cards-grid" id="assignmentList"></div>
+  </section>
+
+  <!-- ── ATTENDANCE ── -->
+  <section class="section" id="section-attendance">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Attendance Tracker</h1>
+        <p class="section-subtitle">Keep your attendance above 75%</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('attendanceModal')">+ Add Subject</button>
+    </div>
+    <div class="cards-grid" id="attendanceList"></div>
+  </section>
+
+  <!-- ── NOTES ── -->
+  <section class="section" id="section-notes">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Notes Manager</h1>
+        <p class="section-subtitle">Your second brain</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('noteModal')">+ New Note</button>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" class="search-input" placeholder="Search notes…" oninput="filterNotes()" id="noteSearch" />
+      <select class="filter-select" onchange="filterNotes()" id="noteCategoryFilter">
+        <option value="all">All Categories</option>
+        <option value="lecture">Lecture</option>
+        <option value="research">Research</option>
+        <option value="personal">Personal</option>
+        <option value="idea">Idea</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="notes-grid" id="notesList"></div>
+  </section>
+
+  <!-- ── EXAMS ── -->
+  <section class="section" id="section-exams">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Exam Countdown</h1>
+        <p class="section-subtitle">Time is ticking — stay prepared</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('examModal')">+ Add Exam</button>
+    </div>
+    <div class="cards-grid" id="examList"></div>
+  </section>
+
+  <!-- ── SCHEDULE ── -->
+  <section class="section" id="section-schedule">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Daily Schedule</h1>
+        <p class="section-subtitle">Plan your day, own your time</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('scheduleModal')">+ Add Task</button>
+    </div>
+    <div class="schedule-list" id="scheduleList"></div>
+  </section>
+
+  <!-- ── PRODUCTIVITY ── -->
+  <section class="section" id="section-productivity">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Productivity Tracker</h1>
+        <p class="section-subtitle">Measure what matters</p>
+      </div>
+      <button class="btn btn-accent" onclick="openModal('productivityModal')">+ Log Today</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card glass">
+        <div class="stat-icon">▲</div>
+        <div class="stat-info">
+          <span class="stat-value" id="prodScore">0</span>
+          <span class="stat-label">Today's Score</span>
+        </div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon">✓</div>
+        <div class="stat-info">
+          <span class="stat-value" id="prodTasks">0</span>
+          <span class="stat-label">Tasks Done</span>
+        </div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon">⏱</div>
+        <div class="stat-info">
+          <span class="stat-value" id="prodHours">0h</span>
+          <span class="stat-label">Study Hours</span>
+        </div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-info">
+          <span class="stat-value" id="prodStreak">0</span>
+          <span class="stat-label">Day Streak</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-grid">
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Weekly Overview</h3>
+        <div class="week-bars" id="weekBars"></div>
+      </div>
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Circular Progress</h3>
+        <div class="circular-wrap">
+          <svg class="circular-svg" viewBox="0 0 120 120">
+            <circle class="circular-bg" cx="60" cy="60" r="50"/>
+            <circle class="circular-fg" id="circularFg" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+          </svg>
+          <div class="circular-label" id="circularLabel">0%</div>
+        </div>
+        <p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:.5rem">Today's Productivity</p>
+      </div>
+    </div>
+
+    <div class="dash-card glass" style="margin-top:1.5rem">
+      <h3 class="dash-card-title">History</h3>
+      <div id="prodHistory"></div>
+    </div>
+  </section>
+
+  <!-- ── SETTINGS ── -->
+  <section class="section" id="section-settings">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Settings</h1>
+        <p class="section-subtitle">Customize your experience</p>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Appearance</h3>
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Dark Mode</span>
+            <span class="setting-desc">Toggle light/dark theme</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Accent Color</span>
+            <span class="setting-desc">Choose your highlight color</span>
+          </div>
+          <div class="color-swatches" id="colorSwatches">
+            <button class="swatch active" data-color="#7C3AED" style="background:#7C3AED" onclick="setAccent('#7C3AED',this)"></button>
+            <button class="swatch" data-color="#059669" style="background:#059669" onclick="setAccent('#059669',this)"></button>
+            <button class="swatch" data-color="#2563EB" style="background:#2563EB" onclick="setAccent('#2563EB',this)"></button>
+            <button class="swatch" data-color="#DC2626" style="background:#DC2626" onclick="setAccent('#DC2626',this)"></button>
+            <button class="swatch" data-color="#D97706" style="background:#D97706" onclick="setAccent('#D97706',this)"></button>
+            <button class="swatch" data-color="#DB2777" style="background:#DB2777" onclick="setAccent('#DB2777',this)"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Profile</h3>
+        <div class="setting-row">
+          <span class="setting-label">College Name</span>
+          <input type="text" class="setting-input" id="collegeNameInput" placeholder="Your college" oninput="saveCollegeName()" />
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Student Name</span>
+          <input type="text" class="setting-input" id="studentNameInput" placeholder="Your name" oninput="saveStudentName()" />
+        </div>
+      </div>
+
+      <div class="dash-card glass">
+        <h3 class="dash-card-title">Data Management</h3>
+        <div class="settings-actions">
+          <button class="btn btn-accent" onclick="exportData()">⬇ Export JSON</button>
+          <label class="btn btn-ghost" style="cursor:pointer">
+            ⬆ Import JSON
+            <input type="file" accept=".json" style="display:none" onchange="importData(event)" />
+          </label>
+          <button class="btn btn-danger" onclick="confirmReset()">✕ Reset All Data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Assignment Modal -->
+<div class="modal-overlay" id="assignmentModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="assignmentModalTitle">New Assignment</h2>
+      <button class="modal-close" onclick="closeModal('assignmentModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="assignmentId" />
+      <div class="form-group">
+        <label>Subject</label>
+        <input type="text" id="assignmentSubject" placeholder="e.g. Mathematics" />
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="assignmentTitle" placeholder="Assignment title" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="assignmentDesc" placeholder="Details…" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="date" id="assignmentDeadline" />
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="assignmentPriority">
+            <option value="high">🔴 High</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="low">🟢 Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('assignmentModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveAssignment()">Save Assignment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal-overlay" id="attendanceModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="attendanceModalTitle">Add Subject</h2>
+      <button class="modal-close" onclick="closeModal('attendanceModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="attendanceId" />
+      <div class="form-group">
+        <label>Subject Name</label>
+        <input type="text" id="attendanceSubject" placeholder="e.g. Physics" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Classes Attended</label>
+          <input type="number" id="attendanceAttended" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label>Total Classes</label>
+          <input type="number" id="attendanceTotal" min="1" value="1" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('attendanceModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveAttendance()">Save Subject</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal glass modal-lg">
+    <div class="modal-header">
+      <h2 id="noteModalTitle">New Note</h2>
+      <button class="modal-close" onclick="closeModal('noteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="noteId" />
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>Title</label>
+          <input type="text" id="noteTitle" placeholder="Note title" />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="noteCategory">
+            <option value="lecture">Lecture</option>
+            <option value="research">Research</option>
+            <option value="personal">Personal</option>
+            <option value="idea">Idea</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea id="noteContent" placeholder="Write your note…" rows="8" oninput="updateCharCount()"></textarea>
+        <span class="char-count"><span id="charCount">0</span> characters</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('noteModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exam Modal -->
+<div class="modal-overlay" id="examModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>Add Exam</h2>
+      <button class="modal-close" onclick="closeModal('examModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Subject</label>
+        <input type="text" id="examSubject" placeholder="e.g. Calculus" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Exam Date</label>
+          <input type="date" id="examDate" />
+        </div>
+        <div class="form-group">
+          <label>Exam Time</label>
+          <input type="time" id="examTime" value="10:00" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Venue / Notes</label>
+        <input type="text" id="examVenue" placeholder="Room no / Hall name" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('examModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveExam()">Add Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="scheduleModalTitle">Add Schedule Task</h2>
+      <button class="modal-close" onclick="closeModal('scheduleModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="scheduleId" />
+      <div class="form-group">
+        <label>Task Name</label>
+        <input type="text" id="scheduleTask" placeholder="e.g. Study Thermodynamics" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Time</label>
+          <input type="time" id="scheduleStart" />
+        </div>
+        <div class="form-group">
+          <label>End Time</label>
+          <input type="time" id="scheduleEnd" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Day</label>
+        <select id="scheduleDay">
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('scheduleModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveSchedule()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Productivity Modal -->
+<div class="modal-overlay" id="productivityModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>Log Today's Productivity</h2>
+      <button class="modal-close" onclick="closeModal('productivityModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Tasks Completed</label>
+        <input type="number" id="prodTasksInput" min="0" value="0" />
+      </div>
+      <div class="form-group">
+        <label>Study Hours</label>
+        <input type="number" id="prodHoursInput" min="0" max="24" step="0.5" value="0" />
+      </div>
+      <div class="form-group">
+        <label>Productivity Score (1–100)</label>
+        <input type="range" id="prodScoreInput" min="1" max="100" value="50" oninput="document.getElementById('prodScoreVal').textContent=this.value" />
+        <span id="prodScoreVal" class="range-label">50</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('productivityModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveProductivity()">Log Entry</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
